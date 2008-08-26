@@ -63,7 +63,7 @@ PyObject* pyvgShear(PyObject* self, PyObject* args);
 
 PyObject* pyvgRotate(PyObject* self, PyObject* args);
 
-// PyObject* pyvgMask(PyObject* self, PyObject* args);
+PyObject* pyvgMask(PyObject* self, PyObject* args);
 
 PyObject* pyvgClear(PyObject* self, PyObject* args);
 
@@ -103,16 +103,57 @@ PyObject* pyvgDestroyPaint(PyObject* self, PyObject* args);
 
 PyObject* pyvgSetPaint(PyObject* self, PyObject* args);
 
-// PyObject* pyvgGetPaint(PyObject* self, PyObject* args);
+PyObject* pyvgGetPaint(PyObject* self, PyObject* args);
 
-// PyObject* pyvgSetColor(PyObject* self, PyObject* args);
+PyObject* pyvgSetColor(PyObject* self, PyObject* args);
 
-// PyObject* pyvgGetColor(PyObject* self, PyObject* args);
+PyObject* pyvgGetColor(PyObject* self, PyObject* args);
 
 PyObject* pyvgPaintPattern(PyObject* self, PyObject* args);
 
+PyObject* pyvgCreateImage(PyObject* self, PyObject* args);
 
+PyObject* pyvgDestroyImage(PyObject* self, PyObject* args);
 
+PyObject* pyvgClearImage(PyObject* self, PyObject* args);
+
+PyObject* pyvgImageSubData(PyObject* self, PyObject* args);
+
+PyObject* pyvgGetImageSubData(PyObject* self, PyObject* args);
+
+PyObject* pyvgChildImage(PyObject* self, PyObject* args);
+
+PyObject* pyvgGetParent(PyObject* self, PyObject* args);
+
+PyObject* pyvgCopyImage(PyObject* self, PyObject* args);
+
+PyObject* pyvgDrawImage(PyObject* self, PyObject* args);
+
+PyObject* pyvgSetPixels(PyObject* self, PyObject* args);
+
+PyObject* pyvgWritePixels(PyObject* self, PyObject* args);
+
+PyObject* pyvgGetPixels(PyObject* self, PyObject* args);
+
+PyObject* pyvgReadPixels(PyObject* self, PyObject* args);
+
+PyObject* pyvgCopyPixels(PyObject* self, PyObject* args);
+
+PyObject* pyvgColorMatrix(PyObject* self, PyObject* args);
+
+PyObject* pyvgConvolve(PyObject* self, PyObject* args);
+
+PyObject* pyvgSeparableConvolve(PyObject* self, PyObject* args);
+
+PyObject* pyvgGaussianBlur(PyObject* self, PyObject* args);
+
+PyObject* pyvgLookup(PyObject* self, PyObject* args);
+
+PyObject* pyvgLookupSingle(PyObject* self, PyObject* args);
+
+PyObject* pyvgHardwareQuery(PyObject* self, PyObject* args);
+
+PyObject* pyvgGetString(PyObject* self, PyObject* args);
 
 PyObject* pyvgCreateContextSH(PyObject* self, PyObject* args);
 
