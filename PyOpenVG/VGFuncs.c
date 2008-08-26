@@ -659,11 +659,277 @@ PyObject* pyvgClearImage(PyObject* self, PyObject* args)
 	Py_RETURN_NONE;
 }
 
+PyObject* pyvgImageSubData(PyObject* self, PyObject* args)
+{
+	int image=0, dataStride=0, dataFormat=0, x=0, y=0, width=0, height=0;
+	PyObject* py_data=NULL;
+	if( !PyArg_ParseTuple(args, "iOiiiiii", &image, &py_data, &dataStride, &dataFormat, &x, &y, &width, &height) )
+		return NULL;
+	
+	int numData = dataStride*height;
+	VGubyte* data = malloc(numData*sizeof(VGubyte));
+	
+	int i;
+	for(i=0; i<numData; i++)
+		data[i] = (VGubyte)PyInt_AsLong(PyList_GetItem(py_data, i));
+	
+	vgImageSubData((VGImage)image, data, (VGint)dataStride, (VGint)dataFormat, (VGint)x, (VGint)y, (VGint)width, (VGint)height);
+	free(data);
+	Py_RETURN_NONE;
+}
 
+PyObject* pyvgGetImageSubData(PyObject* self, PyObject* args)
+{
+	int image=0, dataStride=0, dataFormat=0, x=0, y=0, width=0, height=0;
+	if( !PyArg_ParseTuple(args, "iiiiiii", &image, &dataStride, &dataFormat, &x, &y, &width, &height) )
+		return NULL;
+	
+	int numData = dataStride*height;
+	VGubyte* data = malloc(numData*sizeof(VGubyte));
+	vgGetImageSubData((VGImage)image, data, (VGint)dataStride, (VGint)dataFormat, (VGint)x, (VGint)y, (VGint)width, (VGint)height);
+	
+	PyObject* py_data = PyList_New(numData);
+	int i;
+	for(i=0; i<numData; i++)
+		PyList_SetItem( py_data, i, PyInt_FromLong((long)data[i]) );
+	
+	free(data);
+	return py_data;
+}
 
+PyObject* pyvgChildImage(PyObject* self, PyObject* args)
+{
+	int parent=0, x=0, y=0, width=0, height=0;
+	if( !PyArg_ParseTuple(args, "iiiii", &parent, &x, &y, &width, &height) )
+		return NULL;
+	
+	return Py_BuildValue("i", vgChildImage((VGImage)parent, (VGint)x, (VGint)y, (VGint)width, (VGint)height));
+}
 
+PyObject* pyvgGetParent(PyObject* self, PyObject* args)
+{
+	int image=0;
+	if( !PyArg_ParseTuple(args, "i", &image) )
+		return NULL;
+	
+	return Py_BuildValue("i", vgGetParent((VGImage)image));
+}
 
+PyObject* pyvgCopyImage(PyObject* self, PyObject* args)
+{
+	int dst=0, dx=0, dy=0, src=0, sx=0, sy=0, width=0, height=0, dither=0;
+	if( !PyArg_ParseTuple(args, "iiiiiiiii", &dst, &dx, &dy, &src, &sx, &sy, &width, &height, &dither) )
+		return NULL;
+	
+	vgCopyImage((VGImage)dst, (VGint)dx, (VGint)dy, (VGImage)src, (VGint)sx, (VGint)sy, (VGint)width, (VGint)height, (VGboolean)dither);
+	Py_RETURN_NONE;
+}
 
+PyObject* pyvgDrawImage(PyObject* self, PyObject* args)
+{
+	int image=0;
+	if( !PyArg_ParseTuple(args, "i", &image) )
+		return NULL;
+	
+	vgDrawImage((VGImage)image);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgSetPixels(PyObject* self, PyObject* args)
+{
+	int dx=0, dy=0, src=0, sx=0, sy=0, width=0, height=0;
+	if( !PyArg_ParseTuple(args, "iiiiiii", &dx, &dy, &src, &sx, &sy, &width, &height) )
+		return NULL;
+	
+	vgSetPixels((VGint)dx, (VGint)dy, (VGImage)src, (VGint)sx, (VGint)sy, (VGint)width, (VGint)height);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgWritePixels(PyObject* self, PyObject* args)
+{
+	int dataStride=0, dataFormat=0, dx=0, dy=0, width=0, height=0;
+	PyObject* py_data=NULL;
+	if( !PyArg_ParseTuple(args, "Oiiiiii", &py_data, &dataStride, &dataFormat, &dx, &dy, &width, &height) )
+		return NULL;
+	
+	int numData = dataStride*height;
+	VGubyte* data = malloc(numData*sizeof(VGubyte));
+	
+	int i;
+	for(i=0; i<numData; i++)
+		data[i] = (VGubyte)PyInt_AsLong(PyList_GetItem(py_data, i));
+	
+	vgWritePixels(data, (VGint)dataStride, (VGint)dataFormat, (VGint)dx, (VGint)dy, (VGint)width, (VGint)height);
+	free(data);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgGetPixels(PyObject* self, PyObject* args)
+{
+	int dst=0, dx=0, dy=0, sx=0, sy=0, width=0, height=0;
+	if( !PyArg_ParseTuple(args, "iiiiiii", &dst, &dx, &dy, &sx, &sy, &width, &height) )
+		return NULL;
+	
+	vgGetPixels((VGImage)dst, (VGint)dx, (VGint)dy, (VGint)sx, (VGint)sy, (VGint)width, (VGint)height);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgReadPixels(PyObject* self, PyObject* args)
+{
+	int dataStride=0, dataFormat=0, sx=0, sy=0, width=0, height=0;
+	if( !PyArg_ParseTuple(args, "iiiiii", &dataStride, &dataFormat, &sx, &sy, &width, &height) )
+		return NULL;
+	
+	int numData = dataStride*height;
+	VGubyte* data = malloc(numData*sizeof(VGubyte));
+	vgReadPixels(data, (VGint)dataStride, (VGint)dataFormat, (VGint)sx, (VGint)sy, (VGint)width, (VGint)height);
+	
+	PyObject* py_data = PyList_New(numData);
+	int i;
+	for(i=0; i<numData; i++)
+		PyList_SetItem( py_data, i, PyInt_FromLong((long)data[i]) );
+	
+	free(data);
+	return py_data;
+}
+
+PyObject* pyvgCopyPixels(PyObject* self, PyObject* args)
+{
+	int dx=0, dy=0, sx=0, sy=0, width=0, height=0;
+	if( !PyArg_ParseTuple(args, "iiiiii", &dx, &dy, &sx, &sy, &width, &height) )
+		return NULL;
+	
+	vgCopyPixels((VGint)dx, (VGint)dy, (VGint)sx, (VGint)sy, (VGint)width, (VGint)height);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgColorMatrix(PyObject* self, PyObject* args)
+{
+	int dst=0, src=0;
+	PyObject* py_matrix=NULL;
+	if( !PyArg_ParseTuple(args, "iiO", &dst, &src, &py_matrix) )
+		return NULL;
+	
+	VGfloat matrix[20];
+	int i;
+	for(i=0; i<20; i++)
+		matrix[i] = (VGfloat)PyFloat_AsDouble(PyList_GetItem(py_matrix, i));
+	
+	vgColorMatrix((VGImage)dst, (VGImage)src, matrix);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgConvolve(PyObject* self, PyObject* args)
+{
+	int dst=0, src=0, kernelWidth=0, kernelHeight=0, shiftX=0, shiftY=0, tilingMode=0;
+	PyObject* py_kernel=NULL;
+	float scale=0.0, bias=0.0;
+	if( !PyArg_ParseTuple(args, "iiiiiiOffi", &dst, &src, &kernelWidth, &kernelHeight, &shiftX, &shiftY, &py_kernel, &scale, &bias, &tilingMode) )
+		return NULL;
+	
+	int kernelSize = kernelWidth*kernelHeight;
+	VGshort* kernel = malloc(kernelSize*sizeof(VGshort));
+	
+	int i;
+	for(i=0; i<kernelSize; i++)
+		kernel[i] = (VGshort)PyInt_AsLong(PyList_GetItem(py_kernel, i));
+	
+	vgConvolve((VGImage)dst, (VGImage)src, (VGint)kernelWidth, (VGint)kernelHeight, (VGint)shiftX, (VGint)shiftY, kernel, (VGfloat)scale, (VGfloat)bias, (VGTilingMode)tilingMode);
+	
+	free(kernel);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgSeparableConvolve(PyObject* self, PyObject* args)
+{
+	int dst=0, src=0, kernelWidth=0, kernelHeight=0, shiftX=0, shiftY=0, tilingMode=0;
+	PyObject *py_kernelX=NULL, *py_kernelY=NULL;
+	float scale=0.0, bias=0.0;
+	if( !PyArg_ParseTuple(args, "iiiiiiOOffi", &dst, &src, &kernelWidth, &kernelHeight, &shiftX, &shiftY, &py_kernelX, &py_kernelY, &scale, &bias, &tilingMode) )
+		return NULL;
+	
+	int kernelSize = kernelWidth*kernelHeight;
+	VGshort *kernelX = malloc(kernelSize*sizeof(VGshort)), *kernelY = malloc(kernelSize*sizeof(VGshort));
+	
+	int i;
+	for(i=0; i<kernelSize; i++)
+	{
+		kernelX[i] = (VGshort)PyInt_AsLong(PyList_GetItem(py_kernelX, i));
+		kernelY[i] = (VGshort)PyInt_AsLong(PyList_GetItem(py_kernelY, i));
+	}
+	
+	vgSeparableConvolve((VGImage)dst, (VGImage)src, (VGint)kernelWidth, (VGint)kernelHeight, (VGint)shiftX, (VGint)shiftY, kernelX, kernelY, (VGfloat)scale, (VGfloat)bias, (VGTilingMode)tilingMode);
+	
+	free(kernelX);
+	free(kernelY);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgGaussianBlur(PyObject* self, PyObject* args)
+{
+	int dst=0, src=0, tilingMode=0;
+	float stdDeviationX=0.0, stdDeviationY=0.0;
+	if( !PyArg_ParseTuple(args, "iiffi", &dst, &src, &stdDeviationX, &stdDeviationY, &tilingMode) )
+		return NULL;
+	
+	vgGaussianBlur((VGImage)dst, (VGImage)src, (VGfloat)stdDeviationX, (VGfloat)stdDeviationY, (VGTilingMode)tilingMode);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgLookup(PyObject* self, PyObject* args)
+{
+	int dst=0, src=0, outputLinear=0, outputPremultiplied=0;
+	PyObject *py_redLUT=NULL, *py_greenLUT=NULL, *py_blueLUT=NULL, *py_alphaLUT=NULL;
+	if( !PyArg_ParseTuple(args, "iiOOOOii", &dst, &src, &py_redLUT, &py_greenLUT, &py_blueLUT, &py_alphaLUT, &outputLinear, &outputPremultiplied) )
+		return NULL;
+	
+	VGubyte redLUT[256], greenLUT[256], blueLUT[256], alphaLUT[256];
+	int i;
+	for(i=0; i<256; i++)
+	{
+		redLUT[i] = (VGubyte)PyInt_AsLong(PyList_GetItem(py_redLUT, i));
+		greenLUT[i] = (VGubyte)PyInt_AsLong(PyList_GetItem(py_greenLUT, i));
+		blueLUT[i] = (VGubyte)PyInt_AsLong(PyList_GetItem(py_blueLUT, i));
+		alphaLUT[i] = (VGubyte)PyInt_AsLong(PyList_GetItem(py_alphaLUT, i));
+	}
+	
+	vgLookup((VGImage)dst, (VGImage)src, redLUT, greenLUT, blueLUT, alphaLUT, (VGboolean)outputLinear, (VGboolean)outputPremultiplied);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgLookupSingle(PyObject* self, PyObject* args)
+{
+	int dst=0, src=0, sourceChannel=0, outputLinear=0, outputPremultiplied=0;
+	PyObject* py_lookupTable=NULL;
+	if( !PyArg_ParseTuple(args, "iiOiii", &dst, &src, &py_lookupTable, &sourceChannel, &outputLinear, &outputPremultiplied) )
+		return NULL;
+	
+	VGuint lookupTable[256];
+	int i;
+	for(i=0; i<256; i++)
+		lookupTable[i] = (VGuint)PyInt_AsLong(PyList_GetItem(py_lookupTable, i));
+	
+	vgLookupSingle((VGImage)dst, (VGImage)src, lookupTable, (VGImageChannel)sourceChannel, (VGboolean)outputLinear, (VGboolean)outputPremultiplied);
+	Py_RETURN_NONE;
+}
+
+PyObject* pyvgHardwareQuery(PyObject* self, PyObject* args)
+{
+	int key=0, setting=0;
+	if( !PyArg_ParseTuple(args, "ii", &key, &setting) )
+		return NULL;
+	
+	return Py_BuildValue("i", vgHardwareQuery((VGHardwareQueryType)key, (VGint)setting));
+}
+
+PyObject* pyvgGetString(PyObject* self, PyObject* args)
+{
+	int name;
+	if( !PyArg_ParseTuple(args, "i", &name) )
+		return NULL;
+	
+	return PyString_FromString((char*)vgGetString((VGStringID)name));
+}
 
 PyObject* pyvgCreateContextSH(PyObject* self, PyObject* args)
 {
