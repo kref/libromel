@@ -1,0 +1,3 @@
+First, a library for Scalable Vector Graphics (SVG) rendering, based on OpenVG. To be continued...
+
+=> OpenVG Python binding now available !
